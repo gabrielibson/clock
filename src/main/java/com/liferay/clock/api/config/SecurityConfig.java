@@ -6,8 +6,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-import com.liferay.clock.api.model.TimeSheet;
-
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
@@ -30,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .password("password")
             .roles("USER");
         
-       TimeSheet.userLogged = new UserLogged(123465789L, "Fulano");
+        
+        //TimeSheet.userLogged = new UserLogged(123465789L, "Fulano");
     }
 }
