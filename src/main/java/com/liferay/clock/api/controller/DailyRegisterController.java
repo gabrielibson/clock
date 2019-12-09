@@ -1,5 +1,6 @@
 package com.liferay.clock.api.controller;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -21,8 +22,6 @@ public class DailyRegisterController {
 	@Autowired
 	DailyRegisterService dailyRegisterService;
 
-	DailyRegister dailyRegister; //= this.dailyService.findByDate(LocalDate.now());
-	
 	@GetMapping("/registers/{date}")
 	public Set<LocalDateTime> getRegistersByDate(@PathVariable 
 			@DateTimeFormat(iso = ISO.DATE) LocalDate date) {
@@ -34,16 +33,10 @@ public class DailyRegisterController {
 		return registers;
 	}
 	
-	/*
-	 * @GetMapping("/daily-registers/{pis}") public List<DailyRegister>
-	 * getDailyRegisters(@PathVariable String pis){ return null; }
-	 * 
-	 * @GetMapping("/daily-registers/{pis}/{date}") public Set<String>
-	 * getRegistersByDate(@PathVariable String pis, @PathVariable String date){
-	 * return null; }
-	 * 
-	 * @PostMapping("/daily-registers/registers") public DailyRegister
-	 * newRegister(@RequestBody LocalDateTime newRegister) { return
-	 * dailyService.save(newRegister); }
-	 */
+	@GetMapping("/registers/work-hours/{date}")
+	public String getWorkHoursByDate(@PathVariable 
+			@DateTimeFormat(iso = ISO.DATE) LocalDate date) {
+		Duration workHours = this.dailyRegisterService.calculateWorkHoursByDate(date);
+		return workHours.toString().replace("PT", "");
+	}
 }

@@ -22,6 +22,8 @@ import com.liferay.clock.api.util.YearMonthDateAttributeConverter;
 @Entity
 public class TimeSheet {
 
+	private static final int NOT_NEEDED_INTERVAL = 4;
+
 	@Id
 	@GeneratedValue
 	private Long id;
@@ -38,7 +40,8 @@ public class TimeSheet {
 	@JoinColumn(name = "daily_registers_id")
 	private Set<DailyRegister> dailyRegisters;
 
-	public TimeSheet() {}
+	public TimeSheet() {
+	}
 
 	public TimeSheet(YearMonth yearMonth, User user) {
 		super();
@@ -59,13 +62,30 @@ public class TimeSheet {
 		return user;
 	}
 
+	/**
+	 * Defines whether the new register will be registered in the same day or in the
+	 * day after.
+	 * The register is created according to following:
+	 * If the date of the current DailyRegister is before the newRegister, it
+	 * verifies whether the current DailyRegister has odd punches, in positive case,
+	 * it verifies  whether the interval between the last punch and the current punch
+	 * is higher than 4 hours (the maximum permitted interval of work without rest), in
+	 * negative case, the register is created in the same date of current DailyRegister,
+	 * otherwise it is created a new DailyRegister.
+	 * @param newRegister LocalDateTime
+	 * @return current DailyRegister
+	 */
 	public DailyRegister currentDailyRegister(LocalDateTime newRegister) {
 		if (!this.dailyRegisters.isEmpty()) {
 			DailyRegister dailyRegister = this.getLastRegisterIndex();
+			//verify if the current date is before the newRegister date
 			if (dailyRegister.getDate().isBefore(newRegister.toLocalDate())) {
+				//verify if the current date has odd punches
 				if (dailyRegister.hasOddRegisters()) {
+					//verify if the duration between the last punch and the newRegister is less 
+					//than maximum permitted without rest
 					if (Duration.between(dailyRegister.getLastPunch(), newRegister)
-							.compareTo(Duration.ofHours(4)) > 0) {
+							.compareTo(Duration.ofHours(NOT_NEEDED_INTERVAL)) > 0) {
 						return new DailyRegister(newRegister.toLocalDate());
 					}
 					return dailyRegister;
@@ -78,7 +98,7 @@ public class TimeSheet {
 	}
 
 	private DailyRegister getLastRegisterIndex() {
-		return (DailyRegister) this.dailyRegisters.toArray()[this.dailyRegisters.size()-1];
+		return (DailyRegister) this.dailyRegisters.toArray()[this.dailyRegisters.size() - 1];
 	}
 
 	/*

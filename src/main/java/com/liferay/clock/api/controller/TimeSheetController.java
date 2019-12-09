@@ -40,4 +40,9 @@ public class TimeSheetController {
 
 		return registers;
 	}
+	
+	@GetMapping("/time-sheet/work-hours")
+	public String getWorkHoursByMonth(@RequestParam Year year, @RequestParam Month month) {
+		return this.dailyRegisterService.calculateWorkHoursByMonth(YearMonth.of(year.getValue(), month.getValue()));
+	}
 }
