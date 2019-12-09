@@ -3,7 +3,6 @@ package com.liferay.clock.api.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -18,8 +17,8 @@ public class User {
 	private String username;
 	
 	private String password;
-	@OneToOne
-	private TimeSheet timeSheet;
+	
+	public User() {}
 	
 	public User(Long pis, String username, String password) {
 		super();
@@ -46,7 +45,4 @@ public class User {
 		return password;
 	}
 
-	public TimeSheet getTimeSheet() {
-		return timeSheet;
-	}
 }
