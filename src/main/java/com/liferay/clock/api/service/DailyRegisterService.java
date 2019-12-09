@@ -19,15 +19,18 @@ import com.liferay.clock.api.service.strategy.SaturdayWorkHours;
 import com.liferay.clock.api.service.strategy.SundayWorkHours;
 import com.liferay.clock.api.service.strategy.WorkHoursCalculationStrategy;
 
+/**
+ * Daily register service class. 
+ * Responsible for do operations related to {@link DailyRegister} 
+ * and for do interactions to {@link DailyRegisterRepository} 
+ * @author Gabriel
+ *
+ */
 @Component
 public class DailyRegisterService {
 
 	@Autowired
 	DailyRegisterRepository dailyRepository;
-
-	public DailyRegister save(LocalDateTime newRegister) {
-		return null;
-	}
 
 	/**
 	 * Service method to retrieve the DailyRegister given a date
@@ -49,6 +52,11 @@ public class DailyRegisterService {
 		return this.dailyRepository.findByMonth(yearMonth.getYear(), yearMonth.getMonthValue());
 	}
 
+	/**
+	 * Calculate worked hours by date.
+	 * @param date {@link LocalDate}
+	 * @return amount of worked hours {@link Duration}
+	 */
 	public Duration calculateWorkHoursByDate(LocalDate date) {
 		Duration total = Duration.ZERO;
 		DailyRegister dailyRegister = this.findByDate(date);
@@ -61,6 +69,11 @@ public class DailyRegisterService {
 		return total;
 	}
 
+	/**
+	 * Calculate worked hours by month
+	 * @param yearMonth {@link YearMonth}
+	 * @return worked hours in {@link String} format
+	 */
 	public String calculateWorkHoursByMonth(YearMonth yearMonth) {
 		Duration total = Duration.ZERO;
 		Set<DailyRegister> dailyRegisters = this.findByMonth(yearMonth);
@@ -70,27 +83,46 @@ public class DailyRegisterService {
 		return total.toString().replace("PT", "");
 	}
 
+	/**
+	 * Auxiliary method to decides what kind of {@link WorkHoursCalculationStrategy} will be implemented 
+	 * @param time1 check-in {@link LocalDateTime}
+	 * @param time2 check-out {@link LocalDateTime}
+	 * @return amount of worked hours {@link Duration}
+	 */
 	private Duration calculateWorkHours(LocalDateTime time1, LocalDateTime time2) {
 		Duration total = Duration.ZERO;
 		WorkHoursCalculationStrategy strategy;
+		//verify if check-in and checkout were made in different days
 		if (!time1.toLocalDate().equals(time2.toLocalDate())) {
+			//verify if the different days are Saturday and Sunday
 			if (DayOfWeek.SATURDAY.equals(DayOfWeek.from(time1)) && DayOfWeek.SUNDAY.equals(DayOfWeek.from(time2))) {
 				strategy = new SaturdaySundayWorkHours();
 				total = total.plus(strategy.calculateWorkHours(time1, time2));
-			} else {
+			}
+			//if it's a week day, call night work hours calculator
+			else {
 				strategy = new NightWorkHours();
 				total = total.plus(strategy.calculateWorkHours(time1, time2));
 			}
-		} else if (DayOfWeek.SATURDAY.equals(DayOfWeek.from(time1))) {
+		} 
+		//calculate Saturday work hours
+		else if (DayOfWeek.SATURDAY.equals(DayOfWeek.from(time1))) {
 			strategy = new SaturdayWorkHours();
 			total = total.plus(strategy.calculateWorkHours(time1, time2));
-		} else if (DayOfWeek.SUNDAY.equals(DayOfWeek.from(time2))) {
+		}
+		//calculate Sunday work hours
+		else if (DayOfWeek.SUNDAY.equals(DayOfWeek.from(time2))) {
 			strategy = new SundayWorkHours();
 			total = total.plus(strategy.calculateWorkHours(time1, time2));
-		} else if (NightWorkHours.startExtraTime.isBefore(time2.toLocalTime())) {
+		}
+		//if checkout after 22:00 or check-in before 6:00, calculate night work hours 
+		else if (NightWorkHours.startExtraTime.isBefore(time2.toLocalTime()) 
+				|| NightWorkHours.endExtraTime.isAfter(time1.toLocalTime())) {
 			strategy = new NightWorkHours();
 			total = total.plus(strategy.calculateWorkHours(time1, time2));
-		} else {
+		} 
+		//if it doesn't match the special cases, calculate regular work hours
+		else {
 			strategy = new RegularWorkHours();
 			total = total.plus(strategy.calculateWorkHours(time1, time2));
 		}
