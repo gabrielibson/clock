@@ -3,6 +3,7 @@ package com.liferay.clock.api.model;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -98,11 +99,9 @@ public class TimeSheet {
 	}
 
 	private DailyRegister getLastRegisterIndex() {
-		return (DailyRegister) this.dailyRegisters.toArray()[this.dailyRegisters.size() - 1];
+		Object[] registers = this.dailyRegisters.stream().toArray();
+		Arrays.sort(registers);
+		return (DailyRegister) registers[this.dailyRegisters.size() - 1];
 	}
-
-	/*
-	 * public Map<LocalDate, RegisterSet> getRegistersMap() { return registersMap; }
-	 */
 
 }

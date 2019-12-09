@@ -63,7 +63,7 @@ public class DailyRegisterService {
 		if (dailyRegister.getPunches().size() >= 2) {
 			Object[] punchesPairs = dailyRegister.getPunches().stream().sorted().toArray();
 			for (int i = 0; i + 1 < punchesPairs.length; i = i + 2) {
-				total = this.calculateWorkHours((LocalDateTime) punchesPairs[i], (LocalDateTime) punchesPairs[i + 1]);
+				total = total.plus(this.calculateWorkHours((LocalDateTime) punchesPairs[i], (LocalDateTime) punchesPairs[i + 1]));
 			}
 		}
 		return total;
@@ -127,5 +127,13 @@ public class DailyRegisterService {
 			total = total.plus(strategy.calculateWorkHours(time1, time2));
 		}
 		return total;
+	}
+	
+	public void deleteAllRegisters() {
+		this.dailyRepository.deleteAll();
+	}
+	
+	public void deleteRegistersByDate(LocalDate date) {
+		this.dailyRepository.delete(this.findByDate(date));
 	}
 }

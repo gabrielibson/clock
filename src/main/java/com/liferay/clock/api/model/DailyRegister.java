@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class DailyRegister {
+public class DailyRegister implements Comparable<DailyRegister>{
 
 	@Id
 	@GeneratedValue
@@ -66,5 +66,10 @@ public class DailyRegister {
 
 	public Set<LocalDateTime> getPunches() {
 		return punches;
+	}
+
+	@Override
+	public int compareTo(DailyRegister o) {
+		return this.date.compareTo(o.getDate());
 	}
 }

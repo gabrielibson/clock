@@ -30,9 +30,9 @@ public class NightWorkHours implements WorkHoursCalculationStrategy {
 	public Duration calculateWorkHours(LocalDateTime time1, LocalDateTime time2) {
 		//verify if check-in is before the extra time beginning, in positive case,
 		//calculate regular work hours and night work hours
-		if (time1.toLocalTime().isBefore(startExtraTime)) {
+		if (time1.toLocalTime().isBefore(startExtraTime) && !time1.toLocalDate().isEqual(time2.toLocalDate())) {
 			this.total = calculateRegularWorkHoursInterval(time1, LocalDateTime.of(time1.toLocalDate(), startExtraTime));
-			this.total = this.calculateWorkHoursInterval(LocalDateTime.of(time2.toLocalDate(), startExtraTime), time2);
+			this.total = this.calculateWorkHoursInterval(LocalDateTime.of(time1.toLocalDate(), startExtraTime), time2);
 		} 
 		//verify if check-in is before the extra time end
 		else if (time1.toLocalTime().isBefore(endExtraTime)) {
