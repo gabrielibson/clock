@@ -1,6 +1,5 @@
 package com.liferay.clock.api.controller;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.liferay.clock.api.model.DailyRegister;
+import com.liferay.clock.api.model.WorkHours;
 import com.liferay.clock.api.service.DailyRegisterService;
 
 @RestController
@@ -34,9 +34,9 @@ public class DailyRegisterController {
 	}
 	
 	@GetMapping("/registers/work-hours/{date}")
-	public String getWorkHoursByDate(@PathVariable 
+	public WorkHours getWorkHoursByDate(@PathVariable 
 			@DateTimeFormat(iso = ISO.DATE) LocalDate date) {
-		Duration workHours = this.dailyRegisterService.calculateWorkHoursByDate(date);
-		return workHours.toString().replace("PT", "");
+		WorkHours workHours = this.dailyRegisterService.calculateWorkHoursByDate(date);
+		return workHours;
 	}
 }

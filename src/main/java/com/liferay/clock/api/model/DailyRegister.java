@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,7 +34,11 @@ public class DailyRegister implements Comparable<DailyRegister>{
 	@JoinColumn(name = "punches_id")
 	@JsonFormat(pattern="HH:mm")
 	private Set<LocalDateTime> punches;
-
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "work_hours_id")
+	private WorkHours workHours;
+	
 	public DailyRegister() {}
 
 	public DailyRegister(LocalDate date) {
@@ -66,6 +72,14 @@ public class DailyRegister implements Comparable<DailyRegister>{
 
 	public Set<LocalDateTime> getPunches() {
 		return punches;
+	}
+	
+	public WorkHours getWorkHours() {
+		return workHours;
+	}
+
+	public void setWorkHours(WorkHours workHours) {
+		this.workHours = workHours;
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.liferay.clock.api.model.DailyRegister;
+import com.liferay.clock.api.model.WorkHours;
 import com.liferay.clock.api.repository.DailyRegisterRepository;
 import com.liferay.clock.api.service.strategy.NightWorkHours;
 import com.liferay.clock.api.service.strategy.RegularWorkHours;
@@ -57,16 +58,21 @@ public class DailyRegisterService {
 	 * @param date {@link LocalDate}
 	 * @return amount of worked hours {@link Duration}
 	 */
-	public Duration calculateWorkHoursByDate(LocalDate date) {
+	public WorkHours calculateWorkHoursByDate(LocalDate date) {
 		Duration total = Duration.ZERO;
+		WorkHours workHours = null;
 		DailyRegister dailyRegister = this.findByDate(date);
-		if (dailyRegister.getPunches().size() >= 2) {
+		if (dailyRegister!= null && dailyRegister.getPunches().size() >= 2) {
 			Object[] punchesPairs = dailyRegister.getPunches().stream().sorted().toArray();
 			for (int i = 0; i + 1 < punchesPairs.length; i = i + 2) {
-				total = total.plus(this.calculateWorkHours((LocalDateTime) punchesPairs[i], (LocalDateTime) punchesPairs[i + 1]));
+				workHours = this.calculateWorkHours((LocalDateTime) punchesPairs[i], (LocalDateTime) punchesPairs[i + 1]);
+				total = total.plus(workHours.getWorkHours());
 			}
+			workHours.setWorkHours(total);
+			dailyRegister.setWorkHours(workHours);
+			this.dailyRepository.save(dailyRegister);
 		}
-		return total;
+		return dailyRegister.getWorkHours();
 	}
 
 	/**
@@ -78,7 +84,7 @@ public class DailyRegisterService {
 		Duration total = Duration.ZERO;
 		Set<DailyRegister> dailyRegisters = this.findByMonth(yearMonth);
 		for(DailyRegister register : dailyRegisters) {
-			total = total.plus(this.calculateWorkHoursByDate(register.getDate()));
+			total = total.plus(this.calculateWorkHoursByDate(register.getDate()).getWorkHours());
 		}
 		return total.toString().replace("PT", "");
 	}
@@ -89,7 +95,7 @@ public class DailyRegisterService {
 	 * @param time2 check-out {@link LocalDateTime}
 	 * @return amount of worked hours {@link Duration}
 	 */
-	private Duration calculateWorkHours(LocalDateTime time1, LocalDateTime time2) {
+	private WorkHours calculateWorkHours(LocalDateTime time1, LocalDateTime time2) {
 		Duration total = Duration.ZERO;
 		WorkHoursCalculationStrategy strategy;
 		//verify if check-in and checkout were made in different days
@@ -126,7 +132,8 @@ public class DailyRegisterService {
 			strategy = new RegularWorkHours();
 			total = total.plus(strategy.calculateWorkHours(time1, time2));
 		}
-		return total;
+		WorkHours workHours = WorkHours.verifyRestRules(total);
+		return workHours;
 	}
 	
 	public void deleteAllRegisters() {
