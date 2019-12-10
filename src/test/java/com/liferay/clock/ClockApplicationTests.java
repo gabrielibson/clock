@@ -3,20 +3,18 @@ package com.liferay.clock;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.liferay.clock.api.controller.exceptions.RepeatedPunchesException;
 import com.liferay.clock.api.model.TimeSheet;
 import com.liferay.clock.api.model.WorkHours;
 import com.liferay.clock.api.service.DailyRegisterService;
@@ -35,14 +33,10 @@ class ClockApplicationTests {
 	void contextLoads() {
 	}
 
-	void punchesByDate() {
-		Set<LocalDateTime> punches = this.dailyRegisterService.findByDate(LocalDate.of(2019, Month.APRIL, 1))
-				.getPunches();
-		punches.stream().forEach(System.out::println);
-		assertNotNull(punches);
-	}
-
-//	@Test
+	/**
+	 * Test new night work registers addition
+	 */
+	@Test
 	void addNightWorkRegisters() {
 		TimeSheet timeSheet;
 
@@ -63,8 +57,11 @@ class ClockApplicationTests {
 		assertNotNull(timeSheet);
 	}
 
-	//@Test
-	void addNewRegister() {
+	/**
+	 * Test new registers addition
+	 */
+	@Test
+	void addNewRegisters() {
 		TimeSheet timeSheet;
 
 		LocalDateTime newRegister1 = LocalDateTime.of(2019, Month.APRIL, 1, 8, 0);
@@ -82,11 +79,12 @@ class ClockApplicationTests {
 		LocalDateTime newRegister4 = LocalDateTime.of(2019, Month.APRIL, 2, 12, 0);
 		timeSheet = this.timeSheetService.save(newRegister4);
 		assertNotNull(timeSheet);
-
-		this.punchesByDate();
 	}
 
-//	@Test
+	/**
+	 * Simulate registers that break rest rules
+	 */
+	@Test
 	void registersBrokingRestRules() {
 		LocalDate date = LocalDate.now();
 		this.createBrokenRestRulesRegisters(date);
@@ -95,18 +93,20 @@ class ClockApplicationTests {
 		assertNotEquals("", workHours.getMessage());
 	}
 	
+	/**
+	 * Test duplicated punches insertion
+	 */
 	@Test
 	void duplicatedPunches() {
-		LocalDateTime register1 = LocalDateTime.of(2019, Month.APRIL, 1, 1, 0);
-		LocalDateTime register2 = LocalDateTime.of(2019, Month.APRIL, 1, 1, 0);
-		this.timeSheetService.save(register1);
-		assertThrows(RepeatedPunchesException.class, ()-> this.timeSheetService.save(register2));
+		LocalDateTime register = LocalDateTime.of(2019, Month.APRIL, 1, 1, 0);
+		this.timeSheetService.save(register);
+		assertNull(this.timeSheetService.save(register));
 	}
 	
 	/**
 	 * Calculate regular work hours
 	 */
-//	@Test
+	@Test
 	void workHoursRegular() {
 		LocalDate date = LocalDate.of(2019, Month.DECEMBER, 2);
 		this.create4DailyRegistersByDate(date);
@@ -118,7 +118,7 @@ class ClockApplicationTests {
 	/**
 	 * Calculate Saturday work hours
 	 */
-//	@Test
+	@Test
 	void workHoursSaturday() {
 		LocalDate date = LocalDate.of(2019, Month.NOVEMBER, 30);
 		this.create4DailyRegistersByDate(date);
@@ -130,7 +130,7 @@ class ClockApplicationTests {
 	/**
 	 * Calculate Sunday work hours
 	 */
-//	@Test
+	@Test
 	void workHoursSunday() {
 		LocalDate date = LocalDate.of(2019, Month.DECEMBER, 8);
 		this.create4DailyRegistersByDate(date);
@@ -139,7 +139,10 @@ class ClockApplicationTests {
 		assertEquals(960, duration.toMinutes());
 	}
 
-//	@Test
+	/**
+	 * Calculate work hours at night
+	 */
+	@Test
 	void weekWorkHoursAtNight() {
 		LocalDate date = LocalDate.of(2019, Month.DECEMBER, 9);
 		createWeekNightWorkHours(date);
@@ -149,7 +152,10 @@ class ClockApplicationTests {
 		assertEquals(276, duration.toMinutes());
 	}
 	
-//	@Test
+	/**
+	 * Calculate Saturday and Sunday work hours
+	 */
+	@Test
 	void saturdaySundayWorkHours() {
 		LocalDate date = LocalDate.of(2019, Month.DECEMBER, 7);
 		createSaturdaySundayWorkHours(date);
@@ -159,6 +165,10 @@ class ClockApplicationTests {
 		assertEquals(390, duration.toMinutes());
 	}
 
+	/**
+	 * Auxiliary method to create registers by date
+	 * @param date {@link LocalDate}
+	 */
 	void create4DailyRegistersByDate(LocalDate date) {
 		TimeSheet timeSheet;
 		LocalDateTime newRegister1 = LocalDateTime.of(date, LocalTime.of(8, 0));
@@ -178,6 +188,10 @@ class ClockApplicationTests {
 		assertNotNull(timeSheet);
 	}
 	
+	/**
+	 * Auxiliary method to create night work hours by date
+	 * @param date {@link LocalDate}
+	 */
 	void createWeekNightWorkHours(LocalDate date) {
 		TimeSheet timeSheet;
 		LocalDateTime newRegister1 = LocalDateTime.of(date, LocalTime.of(21, 0));
@@ -197,6 +211,10 @@ class ClockApplicationTests {
 		assertNotNull(timeSheet);
 	}
 	
+	/**
+	 * Auxiliary method to create Saturday and Sunday work hours by date
+	 * @param date {@link LocalDate}
+	 */
 	void createSaturdaySundayWorkHours(LocalDate date) {
 		TimeSheet timeSheet;
 		LocalDateTime newRegister1 = LocalDateTime.of(date, LocalTime.of(21, 0));
@@ -216,6 +234,10 @@ class ClockApplicationTests {
 		assertNotNull(timeSheet);
 	}
 	
+	/**
+	 * Auxiliary method to create registers that breaks rest rules by date
+	 * @param date {@link LocalDate}
+	 */
 	void createBrokenRestRulesRegisters(LocalDate date) {
 		TimeSheet timeSheet;
 		LocalDateTime newRegister1 = LocalDateTime.of(date, LocalTime.of(8, 0));

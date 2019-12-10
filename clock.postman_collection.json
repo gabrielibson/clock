@@ -1,0 +1,163 @@
+{
+	"variables": [],
+	"info": {
+		"name": "clock",
+		"_postman_id": "641595c0-f6d6-8dc3-0f6b-82d0b3f46c27",
+		"description": "Endpoint collection of clock project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/time-sheet/registers",
+			"request": {
+				"url": "http://localhost:8080/time-sheet/registers",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46cGFzc3dvcmQ=",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\"2019-12-02T05:00\""
+				},
+				"description": "Post new registers to time sheet"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/time-sheet/registers?year=2019&month=april",
+			"request": {
+				"url": {
+					"raw": "http://localhost:8080/time-sheet/registers?year=2019&month=april",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"time-sheet",
+						"registers"
+					],
+					"query": [
+						{
+							"key": "year",
+							"value": "2019",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "month",
+							"value": "april",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "",
+							"value": "",
+							"equals": false,
+							"description": "",
+							"disabled": true
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46cGFzc3dvcmQ=",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Get registers by an specific year and month"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/time-sheet/work-hours?year=2019&month=april",
+			"request": {
+				"url": {
+					"raw": "http://localhost:8080/time-sheet/work-hours?year=2019&month=april",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"time-sheet",
+						"work-hours"
+					],
+					"query": [
+						{
+							"key": "year",
+							"value": "2019",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "month",
+							"value": "april",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46cGFzc3dvcmQ=",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Get work hours by an specific year and month"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/registers/2019-12-02",
+			"request": {
+				"url": "http://localhost:8080/registers/2019-12-02",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46cGFzc3dvcmQ=",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Get register by a date"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/registers/work-hours/2019-12-02",
+			"request": {
+				"url": "http://localhost:8080/registers/work-hours/2019-12-02",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46cGFzc3dvcmQ=",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Get work hours by a date"
+			},
+			"response": []
+		}
+	]
+}

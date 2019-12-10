@@ -26,9 +26,11 @@ public class DailyRegister implements Comparable<DailyRegister>{
 
 	@Id
 	@GeneratedValue
+	@JsonIgnore
 	private Long id;
 
 	@Column(nullable = false, columnDefinition = "date", unique = true, name = "date")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate date;
 
 	@ElementCollection(fetch = FetchType.EAGER)

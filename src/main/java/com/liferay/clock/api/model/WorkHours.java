@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -17,7 +16,7 @@ public class WorkHours {
 	@GeneratedValue
 	@JsonIgnore
 	private long id;
-	@JsonFormat(shape = Shape.STRING)
+	@JsonFormat(pattern="HH:mm")
 	private Duration workHours;
 	private String message;
 	
