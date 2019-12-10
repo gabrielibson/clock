@@ -1,6 +1,6 @@
 # Clock
 
-Simulator a electronic point control where users can add and check their electronic point registers.
+Simulator of an electronic point control where users can add and check their electronic point registers.
 
 
 ## Built With
