@@ -1,6 +1,6 @@
 # Clock
 
-Simulator for electronic point control where users can add and check their electronic point registers.
+Simulator a electronic point control where users can add and check their electronic point registers.
 
 
 ## Built With
@@ -15,7 +15,7 @@ Applications
 *   [JUnit 5](https://junit.org/junit5/)- Unit tests.
 
 
-## Running the application 
+## Running application 
 
 - Download the zip or clone the Git repository.
 - Unzip the zip file (if you downloaded one)
@@ -25,9 +25,9 @@ Applications
 .\gradlew bootRun
 ```
 
-## Running the tests
+## Running tests
 - Open Command Prompt and Change directory (cd) to project root folder.
-- Run the Gradle command to start the application:
+- Run the Gradle command to running tests:
 ```shell
 .\gradlew test
 ```
@@ -38,30 +38,29 @@ Applications
 
 ## Documentation
 
-* [Postman Collection](https://documenter.getpostman.com/view/2449187/RWTiwzb2) - online, with code auto-generated snippets in cURL, 
-jQuery, Ruby,Python Requests, Node, PHP and Go programming languages
-* [Postman Collection](https://github.com/AnanthaRajuC/Spring-Boot-Application-Template/blob/master/Spring%20Boot%20Template.postman_collection.json) - offline
-* [Swagger](http://localhost:8088/swagger-ui.html) - Documentation & Testing
+* [Postman Collection Online](https://documenter.getpostman.com/view/1520549/SWE6adbU?version=latest) - Endpoint collection online
+* [Postman Collection Offline](https://github.com/gabrielibson/clock/clock.postman_collection.json) - Endpoint collection offline
+* [Swagger](http://localhost:8080/swagger-ui.html) - Documentation & Testing
 
 ## Data Model
 
 ![dataModel](https://user-images.githubusercontent.com/3866759/70484670-55e55e80-1acb-11ea-8713-5930ef9255c4.png)
 
-- `daily_register_punches` — represents the daily punches created by users;
-- `daily_register` — represents the daily registers created by users;
-- `time_sheet` — represents the time sheet with the registers created by users by month;
-- `work_hours` — represents the worked hours by day;
-- `users` — represents the user;
+- `daily_register_punches` — represents daily punches created by users;
+- `daily_register` — represents daily registers created by users;
+- `time_sheet` — represents time sheet with the registers created by users by month;
+- `work_hours` — represents worked hours by day;
+- `users` — represents an user.
 
 
 ## Packages
 
-- `model` — to hold the entities;
+- `model` — to hold entities;
 - `repository` — to communicate with the database;
-- `service` — to hold the business logic;
+- `service` — to hold business logic;
 - `controller` — to listen to the client;
-- `config` -  to hold the application config;
-- `util` -  to hold utils functions.
+- `config` -  to hold application config;
+- `util` -  to hold utils functions classes.
 
 - `resources/` - contains all the static resources and property files.
 
