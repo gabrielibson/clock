@@ -1,6 +1,5 @@
 package com.liferay.clock.api.service;
 
-import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,11 +12,7 @@ import org.springframework.stereotype.Component;
 import com.liferay.clock.api.model.DailyRegister;
 import com.liferay.clock.api.model.WorkHours;
 import com.liferay.clock.api.repository.DailyRegisterRepository;
-import com.liferay.clock.api.service.strategy.NightWorkHours;
-import com.liferay.clock.api.service.strategy.RegularWorkHours;
-import com.liferay.clock.api.service.strategy.SaturdaySundayWorkHours;
-import com.liferay.clock.api.service.strategy.SaturdayWorkHours;
-import com.liferay.clock.api.service.strategy.SundayWorkHours;
+import com.liferay.clock.api.service.factory.WorkHoursCalculationStrategyFactory;
 import com.liferay.clock.api.service.strategy.WorkHoursCalculationStrategy;
 
 /**
@@ -32,6 +27,8 @@ public class DailyRegisterService {
 
 	@Autowired
 	DailyRegisterRepository dailyRepository;
+	
+	WorkHoursCalculationStrategyFactory workHoursCalculationStrategyFactory = WorkHoursCalculationStrategyFactory.getInstance();
 
 	/**
 	 * Service method to retrieve the DailyRegister given a date
@@ -96,43 +93,8 @@ public class DailyRegisterService {
 	 * @return amount of worked hours {@link Duration}
 	 */
 	private WorkHours calculateWorkHours(LocalDateTime time1, LocalDateTime time2) {
-		Duration total = Duration.ZERO;
-		WorkHoursCalculationStrategy strategy;
-		//verify if check-in and checkout were made in different days
-		if (!time1.toLocalDate().equals(time2.toLocalDate())) {
-			//verify if the different days are Saturday and Sunday
-			if (DayOfWeek.SATURDAY.equals(DayOfWeek.from(time1)) && DayOfWeek.SUNDAY.equals(DayOfWeek.from(time2))) {
-				strategy = new SaturdaySundayWorkHours();
-				total = total.plus(strategy.calculateWorkHours(time1, time2));
-			}
-			//if it's a week day, call night work hours calculator
-			else {
-				strategy = new NightWorkHours();
-				total = total.plus(strategy.calculateWorkHours(time1, time2));
-			}
-		} 
-		//calculate Saturday work hours
-		else if (DayOfWeek.SATURDAY.equals(DayOfWeek.from(time1))) {
-			strategy = new SaturdayWorkHours();
-			total = total.plus(strategy.calculateWorkHours(time1, time2));
-		}
-		//calculate Sunday work hours
-		else if (DayOfWeek.SUNDAY.equals(DayOfWeek.from(time2))) {
-			strategy = new SundayWorkHours();
-			total = total.plus(strategy.calculateWorkHours(time1, time2));
-		}
-		//if checkout after 22:00 or check-in before 6:00, calculate night work hours 
-		else if (NightWorkHours.startExtraTime.isBefore(time2.toLocalTime()) 
-				|| NightWorkHours.endExtraTime.isAfter(time1.toLocalTime())) {
-			strategy = new NightWorkHours();
-			total = total.plus(strategy.calculateWorkHours(time1, time2));
-		} 
-		//if it doesn't match the special cases, calculate regular work hours
-		else {
-			strategy = new RegularWorkHours();
-			total = total.plus(strategy.calculateWorkHours(time1, time2));
-		}
-		WorkHours workHours = WorkHours.verifyRestRules(total);
+		WorkHoursCalculationStrategy strategy = workHoursCalculationStrategyFactory.getWorkHoursCalculationStrategy(time1, time2);
+		WorkHours workHours = WorkHours.verifyRestRules(strategy.calculateWorkHours(time1, time2));		
 		return workHours;
 	}
 	
