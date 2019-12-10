@@ -3,6 +3,7 @@ package com.liferay.clock;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.liferay.clock.api.controller.exceptions.RepeatedPunchesException;
 import com.liferay.clock.api.model.TimeSheet;
 import com.liferay.clock.api.model.WorkHours;
 import com.liferay.clock.api.service.DailyRegisterService;
@@ -84,13 +86,21 @@ class ClockApplicationTests {
 		this.punchesByDate();
 	}
 
-	@Test
+//	@Test
 	void registersBrokingRestRules() {
 		LocalDate date = LocalDate.now();
 		this.createBrokenRestRulesRegisters(date);
 		WorkHours workHours = this.dailyRegisterService.calculateWorkHoursByDate(date);
 		this.dailyRegisterService.deleteRegistersByDate(date);
 		assertNotEquals("", workHours.getMessage());
+	}
+	
+	@Test
+	void duplicatedPunches() {
+		LocalDateTime register1 = LocalDateTime.of(2019, Month.APRIL, 1, 1, 0);
+		LocalDateTime register2 = LocalDateTime.of(2019, Month.APRIL, 1, 1, 0);
+		this.timeSheetService.save(register1);
+		assertThrows(RepeatedPunchesException.class, ()-> this.timeSheetService.save(register2));
 	}
 	
 	/**

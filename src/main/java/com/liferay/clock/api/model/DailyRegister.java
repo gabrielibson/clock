@@ -19,6 +19,7 @@ import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.liferay.clock.api.controller.exceptions.RepeatedPunchesException;
 
 @Entity
 public class DailyRegister implements Comparable<DailyRegister>{
@@ -48,6 +49,9 @@ public class DailyRegister implements Comparable<DailyRegister>{
 	}
 
 	public DailyRegister registerPoint(LocalDateTime register) {
+		if(this.punches.contains(register)) {
+			throw new RepeatedPunchesException(RepeatedPunchesException.MESSAGE);
+		}
 		this.punches.add(register);
 		return this;
 	}

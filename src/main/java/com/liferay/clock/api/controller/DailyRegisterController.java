@@ -16,12 +16,15 @@ import com.liferay.clock.api.model.DailyRegister;
 import com.liferay.clock.api.model.WorkHours;
 import com.liferay.clock.api.service.DailyRegisterService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 public class DailyRegisterController {
 	
 	@Autowired
 	DailyRegisterService dailyRegisterService;
 
+	@ApiOperation(value = "Endpoint to get registers of a specific date")
 	@GetMapping("/registers/{date}")
 	public Set<LocalDateTime> getRegistersByDate(@PathVariable 
 			@DateTimeFormat(iso = ISO.DATE) LocalDate date) {
@@ -33,6 +36,7 @@ public class DailyRegisterController {
 		return registers;
 	}
 	
+	@ApiOperation(value = "Endpoint to get work hours of a specific date")
 	@GetMapping("/registers/work-hours/{date}")
 	public WorkHours getWorkHoursByDate(@PathVariable 
 			@DateTimeFormat(iso = ISO.DATE) LocalDate date) {
